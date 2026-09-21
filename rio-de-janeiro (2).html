@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rio de Janeiro — Batucada, Pedra e Luz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night: #0B1F3A;
+    --night-2: #0E2A4D;
+    --gold: #F2B705;
+    --pink: #E63973;
+    --teal: #12A296;
+    --sand: #F3E7D2;
+    --stone-dark: #16223A;
+    --ink: #071229;
+    --white-stone: #FDFBF6;
+    --line: rgba(255,255,255,0.14);
+    --shadow-hard: 6px 6px 0 rgba(7,18,41,0.9);
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Sora', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    background:var(--night);
+    color:var(--sand);
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--pink); color:var(--white-stone);}
+
+  h1,h2,h3,.display{
+    font-family:var(--font-display);
+    letter-spacing:0.01em;
+    line-height:0.92;
+    margin:0;
+    font-weight:400;
+  }
+
+  a{color:inherit;}
+  button{font-family:var(--font-body); cursor:pointer;}
+  p{margin:0;}
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-visible{
+    outline:3px solid var(--gold);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    background:linear-gradient(to bottom, rgba(11,31,58,0.92), rgba(11,31,58,0));
+    pointer-events:none;
+  }
+  .nav *{pointer-events:auto;}
+  .nav .logo{font-family:var(--font-display); font-size:22px; letter-spacing:0.04em;}
+  .nav .logo span{color:var(--gold);}
+  .nav ul{list-style:none; display:flex; gap:24px; margin:0; padding:0;}
+  .nav a{
+    text-decoration:none; font-size:14px; font-weight:600;
+    color:var(--sand); opacity:0.85; padding-bottom:3px;
+    border-bottom:2px solid transparent;
+    transition:opacity .2s, border-color .2s;
+  }
+  .nav a:hover{opacity:1; border-color:var(--gold);}
+  .nav-toggle{display:none; background:none; border:2px solid var(--sand); color:var(--sand); border-radius:6px; padding:6px 10px;}
+
+  @media (max-width:820px){
+    .nav ul{
+      position:absolute; top:60px; right:20px; left:20px;
+      flex-direction:column; background:var(--night-2);
+      border:2px solid var(--line); border-radius:12px; padding:18px;
+      display:none; box-shadow:var(--shadow-hard);
+    }
+    .nav ul.open{display:flex;}
+    .nav-toggle{display:block;}
+  }
+
+  /* ================= HERO ================= */
+  .hero{
+    position:relative; min-height:100svh; display:flex; align-items:flex-end;
+    overflow:hidden;
+    background:radial-gradient(120% 90% at 50% -10%, #163a63 0%, var(--night) 55%, #061020 100%);
+  }
+  #confetti-canvas{position:absolute; inset:0; width:100%; height:100%; z-index:1;}
+  .skyline{position:absolute; inset:0; z-index:2; pointer-events:none;}
+  .skyline svg{position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:min(1400px, 160vw); height:auto;}
+  .layer-far{opacity:0.55;}
+  .layer-mid{opacity:0.8;}
+
+  .hero-content{position:relative; z-index:3; width:100%; padding:0 32px 8vh; text-align:center;}
+  .hero-eyebrow{font-size:14px; font-weight:700; color:var(--teal); margin-bottom:10px;}
+  .hero h1{font-size:clamp(64px, 15vw, 168px); color:var(--sand);}
+  .hero h1 em{font-style:normal; color:var(--gold); display:block;}
+  .hero p{max-width:540px; margin:20px auto 0; font-size:17px; line-height:1.6; color:rgba(243,231,210,0.85);}
+  .hero-actions{margin-top:34px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+  .btn{display:inline-flex; align-items:center; gap:8px; padding:14px 26px; border-radius:999px; border:2px solid transparent; font-weight:700; font-size:15px; text-decoration:none; transition:transform .15s ease;}
+  .btn:active{transform:scale(0.96);}
+  .btn-primary{background:var(--pink); color:var(--white-stone); box-shadow:0 10px 30px -10px rgba(230,57,115,0.7);}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{background:transparent; border-color:var(--sand); color:var(--sand);}
+  .btn-ghost:hover{background:rgba(243,231,210,0.08);}
+
+  .scroll-cue{position:absolute; bottom:24px; left:50%; transform:translateX(-50%); z-index:3; font-size:12px; letter-spacing:0.08em; color:rgba(243,231,210,0.6); display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .scroll-cue .dash{width:2px; height:26px; background:var(--sand); opacity:0.5; animation:scrollpulse 1.8s ease-in-out infinite;}
+  @keyframes scrollpulse{0%,100%{transform:scaleY(1); opacity:0.5;} 50%{transform:scaleY(0.4); opacity:0.9;}}
+
+  /* ================= SECTION SHELL ================= */
+  section{position:relative; padding:110px 0;}
+  .section-head{display:flex; align-items:flex-end; justify-content:space-between; gap:40px; flex-wrap:wrap; margin-bottom:40px;}
+  .section-head h2{font-size:clamp(40px, 6vw, 76px);}
+  .section-head .lede{max-width:380px; font-size:15px; line-height:1.7; opacity:0.85;}
+  .kicker{font-size:13px; font-weight:700; color:var(--gold); margin-bottom:8px; display:block;}
+  .light-section{background:var(--sand); color:var(--ink);}
+  .light-section .kicker{color:var(--pink);}
+
+  .intro-text{max-width:760px; font-size:15.5px; line-height:1.75; opacity:0.88; margin-bottom:48px;}
+  .intro-text strong{color:var(--gold); font-weight:700;}
+  .light-section .intro-text strong{color:var(--pink);}
+
+  /* ================= CARNAVAL / BATUCADA ================= */
+  .batucada-panel{background:var(--night-2); border:2px solid var(--line); border-radius:20px; padding:32px; box-shadow:var(--shadow-hard);}
+  .transport{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:28px; padding-bottom:24px; border-bottom:1px solid var(--line);}
+  .play-btn{width:56px; height:56px; border-radius:50%; background:var(--pink); border:none; color:white; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; box-shadow:0 8px 20px -6px rgba(230,57,115,0.7);}
+  .play-btn:hover{filter:brightness(1.08);}
+  .tempo-control{display:flex; align-items:center; gap:12px; font-size:13px; color:rgba(243,231,210,0.8);}
+  .tempo-control input[type=range]{accent-color:var(--gold); width:140px;}
+  .clear-btn{margin-left:auto; background:none; border:1px solid var(--line); color:var(--sand); padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600;}
+  .clear-btn:hover{border-color:var(--gold); color:var(--gold);}
+
+  .sequencer{display:flex; flex-direction:column; gap:10px;}
+  .instrument-row{display:grid; grid-template-columns:110px repeat(8, 1fr); gap:8px; align-items:center;}
+  .instrument-name{font-size:13px; font-weight:700; color:var(--sand); opacity:0.85;}
+  .instrument-name small{display:block; font-weight:400; opacity:0.6; font-size:11px;}
+  .cell{aspect-ratio:1/1; border-radius:8px; background:rgba(243,231,210,0.06); border:1px solid var(--line); transition:transform .08s ease, background .15s ease;}
+  .cell:hover{background:rgba(243,231,210,0.14);}
+  .cell.on{background:var(--inst-color, var(--gold)); border-color:transparent;}
+  .cell.playhead{transform:scale(1.12); box-shadow:0 0 0 2px var(--sand);}
+
+  .carnival-grid{display:grid; grid-template-columns: 1fr 1.3fr; gap:60px; align-items:start;}
+  @media (max-width:900px){ .carnival-grid{grid-template-columns:1fr;} .instrument-row{grid-template-columns:88px repeat(8,1fr); gap:6px;} }
+
+  .fact-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px;}
+  .fact-list li{display:flex; gap:14px; font-size:14px; line-height:1.6; opacity:0.9;}
+  .fact-list .num{font-family:var(--font-display); font-size:26px; color:var(--teal); flex-shrink:0; width:38px;}
+  .carnival-note{margin-top:26px; font-size:13px; opacity:0.7; line-height:1.6;}
+
+  /* ================= MÚSICA ================= */
+  .genre-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:22px;}
+  .genre-card{
+    background:var(--night-2); border:2px solid var(--line); border-radius:18px;
+    padding:26px; display:flex; flex-direction:column; gap:14px;
+  }
+  .genre-head{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .genre-head h3{font-size:30px; color:var(--gold-c, var(--gold));}
+  .genre-card.bossa h3{color:var(--teal);}
+  .genre-card.funk h3{color:var(--pink);}
+  .genre-year{font-size:12px; opacity:0.6; font-weight:600;}
+  .genre-card p{font-size:14px; line-height:1.7; opacity:0.88;}
+  .genre-play{
+    align-self:flex-start;
+    display:flex; align-items:center; gap:10px;
+    background:var(--gold); color:var(--ink); border:none;
+    padding:10px 18px; border-radius:999px; font-size:13px; font-weight:700;
+  }
+  .genre-card.bossa .genre-play{background:var(--teal); color:var(--white-stone);}
+  .genre-card.funk .genre-play{background:var(--pink); color:var(--white-stone);}
+  .genre-play:hover{filter:brightness(1.08);}
+  .genre-viz{display:flex; gap:4px; height:22px; align-items:flex-end;}
+  .genre-viz span{width:4px; background:currentColor; opacity:0.5; border-radius:2px; transition:height .1s ease;}
+
+  /* ================= CIDADE / CALCADA ================= */
+  .city-layout{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;}
+  @media (max-width:900px){ .city-layout{grid-template-columns:1fr;} }
+  .sky-card{border-radius:20px; overflow:hidden; border:2px solid var(--ink); box-shadow:8px 8px 0 rgba(7,18,41,0.15); background:#8fd0e0;}
+  #sky-canvas{display:block; width:100%; height:auto;}
+  .time-control{display:flex; align-items:center; gap:14px; margin-top:18px;}
+  .time-control input[type=range]{flex:1; accent-color:var(--pink);}
+  .time-control .time-label{font-weight:700; font-size:14px; min-width:64px; text-align:right;}
+
+  .mosaic-card{background:var(--white-stone); border:2px solid var(--ink); border-radius:20px; padding:24px; box-shadow:8px 8px 0 rgba(7,18,41,0.15);}
+  #mosaic-canvas{width:100%; aspect-ratio:4/3; border-radius:12px; cursor:crosshair; display:block; touch-action:none;}
+  .mosaic-controls{display:flex; align-items:center; gap:10px; margin-top:16px; flex-wrap:wrap;}
+  .swatch{width:30px; height:30px; border-radius:50%; border:2px solid var(--ink); flex-shrink:0;}
+  .swatch.active{outline:3px solid var(--pink); outline-offset:2px;}
+  .mosaic-controls button.small{background:var(--ink); color:var(--white-stone); border:none; padding:9px 16px; border-radius:999px; font-size:12px; font-weight:700; margin-left:auto;}
+  .mosaic-controls button.small:hover{background:var(--pink);}
+  .mosaic-hint{font-size:12.5px; opacity:0.65; margin-top:12px; line-height:1.5;}
+
+  /* ================= ARQUITETURA ================= */
+  .arch-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:22px;}
+  .arch-card{perspective:1200px; height:300px;}
+  .arch-card-inner{position:relative; width:100%; height:100%; transition:transform 0.6s cubic-bezier(.2,.8,.2,1); transform-style:preserve-3d;}
+  .arch-card.flipped .arch-card-inner{transform:rotateY(180deg);}
+  .arch-face{position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; border:2px solid var(--line); display:flex; flex-direction:column; overflow:hidden;}
+  .arch-front{background:var(--night-2); justify-content:space-between; padding:18px;}
+  .arch-front svg{width:100%; height:150px;}
+  .arch-front h3{font-size:26px; margin-top:8px;}
+  .arch-front .tap-hint{font-size:11px; opacity:0.55; font-weight:600;}
+  .arch-back{background:var(--gold); color:var(--ink); transform:rotateY(180deg); padding:22px; justify-content:center; font-size:14px; line-height:1.6; font-weight:500;}
+  .arch-back strong{font-family:var(--font-display); display:block; font-size:20px; margin-bottom:8px; letter-spacing:0.02em;}
+  .arch-card:nth-child(2) .arch-back{background:var(--teal); color:var(--white-stone);}
+  .arch-card:nth-child(3) .arch-back{background:var(--pink); color:var(--white-stone);}
+  .arch-card:nth-child(4) .arch-back{background:var(--sand); color:var(--ink);}
+  .arch-card:nth-child(5) .arch-back{background:var(--white-stone); color:var(--ink);}
+
+  footer{background:var(--stone-dark); padding:60px 0 34px; text-align:center; font-size:13px; color:rgba(243,231,210,0.6);}
+  footer .display{font-size:32px; color:var(--sand); margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">RIO<span>.</span>DJ</div>
+  <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+  <ul id="navMenu">
+    <li><a href="#carnaval">Carnaval</a></li>
+    <li><a href="#musica">Música</a></li>
+    <li><a href="#cidade">Cidade</a></li>
+    <li><a href="#arquitetura">Arquitetura</a></li>
+  </ul>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="hero">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="skyline" id="skyline">
+    <svg class="layer-far" viewBox="0 0 1400 420" preserveAspectRatio="xMidYMax slice">
+      <path d="M0,420 L0,300 Q120,180 220,300 L260,300 Q300,120 340,300 L1140,300 Q1180,140 1220,300 L1260,300 Q1320,220 1400,300 L1400,420 Z" fill="#12294a"/>
+    </svg>
+    <svg class="layer-mid" viewBox="0 0 1400 420" preserveAspectRatio="xMidYMax slice">
+      <path d="M560,420 L560,260 Q620,150 680,260 L680,420 Z" fill="#0e2038"/>
+      <g transform="translate(614,150)">
+        <rect x="-4" y="0" width="8" height="46" fill="#0a1930"/>
+        <rect x="-42" y="14" width="84" height="7" rx="3" fill="#0a1930"/>
+      </g>
+      <path d="M960,420 L960,330 Q1010,240 1060,330 L1060,420 Z" fill="#0e2038"/>
+      <path d="M1030,420 L1030,350 Q1065,290 1100,350 L1100,420 Z" fill="#0e2038"/>
+      <g fill="#0e2038">
+        <rect x="120" y="330" width="46" height="90"/>
+        <rect x="176" y="300" width="34" height="120"/>
+        <rect x="220" y="345" width="50" height="75"/>
+        <rect x="800" y="310" width="40" height="110"/>
+        <rect x="846" y="350" width="30" height="70"/>
+        <rect x="882" y="325" width="46" height="95"/>
+        <rect x="1150" y="335" width="36" height="85"/>
+        <rect x="1192" y="360" width="50" height="60"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <span class="hero-eyebrow">UMA CIDADE QUE SE OUVE, SE PISA E SE OLHA</span>
+    <h1>RIO DE<em>JANEIRO</em></h1>
+    <p>Batucada, ritmo, calçada e pedra. Um pedaço interativo do Rio — com um pouco da história por trás de cada clique — pra explorar antes de descer a ladeira.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" id="heroConfettiBtn">Joga confete 🎉</button>
+      <a class="btn btn-ghost" href="#carnaval">Ver o bloco ↓</a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span class="dash"></span>role</div>
+</header>
+
+<!-- ============ CARNAVAL / BATUCADA ============ -->
+<section id="carnaval">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="kicker">01 — O SOM DA RUA</span>
+        <h2>O carnaval que<br>não cabe em teatro</h2>
+      </div>
+      <p class="lede">Monta sua própria batucada abaixo: ative as células, aperte o play e ouça os cinco instrumentos-base sintetizados ao vivo, sem nenhum arquivo de áudio.</p>
+    </div>
+
+    <p class="intro-text">O carnaval do Rio é considerado <strong>o maior carnaval do mundo</strong>, e ele nasceu na rua — bem antes de existir o sambódromo. Tudo começou no início do século 20, quando grupos chamados <strong>cordões e ranchos</strong> saíam tocando pelo Centro do Rio. Esse som veio dos batuques trazidos por africanos escravizados, principalmente perto da região que ficou conhecida como Pequena África. Em 1928, no bairro da Estácio de Sá, nasceu a <strong>Deixa Falar</strong>, considerada a primeira escola de samba do Brasil. Foi dali que vieram as escolas que hoje desfilam na Marquês de Sapucaí, o sambódromo projetado por Oscar Niemeyer em 1984. Mas pra muita gente, o carnaval de verdade continua sendo o dos <strong>blocos de rua</strong>: são mais de 500 espalhados pela cidade em fevereiro, do tradicional Cordão do Bola Preta, que existe desde 1918, até os blocos mais novos de Santa Teresa e do Centro histórico.</p>
+
+    <div class="carnival-grid">
+      <div>
+        <ul class="fact-list">
+          <li><span class="num">01</span><span><strong>Surdo</strong> — o coração do samba. Marca o pulso e nunca falha no tempo forte; sem ele, a bateria perde o chão.</span></li>
+          <li><span class="num">02</span><span><strong>Caixa</strong> — o rufar contínuo que costura todos os outros instrumentos e dá velocidade ao desfile.</span></li>
+          <li><span class="num">03</span><span><strong>Tamborim</strong> — agudo e cortante, desenha as viradas que animam o bloco e conduzem as trocas de canto.</span></li>
+          <li><span class="num">04</span><span><strong>Agogô</strong> — dois tons metálicos de raiz afro-brasileira, um dos instrumentos mais antigos da percussão carioca.</span></li>
+          <li><span class="num">05</span><span><strong>Pandeiro</strong> — versátil, mistura grave, agudo e chocalho num só golpe; também é rei do samba de mesa e do choro.</span></li>
+        </ul>
+        <p class="carnival-note">Dica: comece só com o surdo em 1 e 5, depois vá somando camadas — é assim que uma bateria de escola de samba se constrói, naipe por naipe, no ensaio.</p>
+      </div>
+
+      <div class="batucada-panel">
+        <div class="transport">
+          <button class="play-btn" id="playBtn" aria-label="Tocar batucada">▶</button>
+          <div class="tempo-control">
+            <span>Andamento</span>
+            <input type="range" id="tempoSlider" min="70" max="160" value="112">
+            <span id="tempoValue">112 bpm</span>
+          </div>
+          <button class="clear-btn" id="clearBtn">Limpar tudo</button>
+        </div>
+        <div class="sequencer" id="sequencer"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MÚSICA ============ -->
+<section id="musica" class="light-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="kicker">02 — A TRILHA SONORA DA CIDADE</span>
+        <h2>Três ritmos,<br>uma cidade</h2>
+      </div>
+      <p class="lede">O Rio não inventou o samba sozinho, mas foi onde ele virou identidade nacional — e onde nasceram outros dois gêneros que mudaram a música brasileira. Toque para ouvir uma amostra sintetizada do groove de cada um.</p>
+    </div>
+
+    <div class="genre-grid">
+      <div class="genre-card samba">
+        <div class="genre-head"><h3>Samba</h3><span class="genre-year">déc. de 1910–30</span></div>
+        <p>O samba chegou ao Rio com baianos ligados aos terreiros de candomblé, que vieram morar perto da Praça Onze — região que ficou conhecida como "Pequena África". Nas casas de mulheres como Tia Ciata nasceram as primeiras rodas de samba, misturando o batuque africano com o maxixe e a polca. Foi aí que surgiu aquele jeitinho de tocar "atrasado" que faz o samba balançar.</p>
+        <button class="genre-play" data-genre="samba"><span class="btn-icon">▶</span> Ouvir o groove</button>
+        <div class="genre-viz" id="viz-samba"></div>
+      </div>
+
+      <div class="genre-card bossa">
+        <div class="genre-head"><h3>Bossa Nova</h3><span class="genre-year">a partir de 1958</span></div>
+        <p>Nasceu dentro de apartamentos de Copacabana e Ipanema, quando João Gilberto, Tom Jobim e Vinicius de Moraes deixaram o samba mais suave e simples: um violão baixinho, acordes emprestados do jazz e uma batida sutil, quase sussurrada. A música "Chega de Saudade", de 1958, é considerada o marco inicial desse movimento.</p>
+        <button class="genre-play" data-genre="bossa"><span class="btn-icon">▶</span> Ouvir o groove</button>
+        <div class="genre-viz" id="viz-bossa"></div>
+      </div>
+
+      <div class="genre-card funk">
+        <div class="genre-head"><h3>Funk Carioca</h3><span class="genre-year">a partir dos anos 1970</span></div>
+        <p>Nasceu nos bailes da Zona Norte e da Baixada Fluminense, embalados por música black e soul dos Estados Unidos. Nos anos 1990 ganhou uma batida eletrônica bem mais forte e, depois, criou sua marca registrada: o <strong>tamborzão</strong>, um ritmo pesado e repetitivo inventado em estúdios do Rio que hoje toca em festas no mundo inteiro.</p>
+        <button class="genre-play" data-genre="funk"><span class="btn-icon">▶</span> Ouvir o groove</button>
+        <div class="genre-viz" id="viz-funk"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CIDADE / CALCADA ============ -->
+<section id="cidade">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="kicker">03 — A CIDADE SOB OS PÉS E SOBRE A BAÍA</span>
+        <h2>Pedra portuguesa<br>e a luz da baía</h2>
+      </div>
+      <p class="lede">Duas texturas que definem a estética carioca: a calçada em onda preta e branca de Copacabana e a luz que muda sobre o Corcovado ao longo do dia. Interaja com as duas.</p>
+    </div>
+
+    <p class="intro-text">O Rio tem uma paisagem cheia de contrastes. A Floresta da Tijuca, uma das maiores florestas dentro de uma cidade em todo o mundo, fica quase colada nos prédios de Botafogo e Copacabana, e os morros de pedra nua, como o Pão de Açúcar, emolduram praias em forma de meia-lua. Por muito tempo, o Rio foi <strong>a porta de entrada do Brasil</strong>: foi por aqui que passou boa parte dos navios, imigrantes e riquezas que chegavam e saíam do país, e a cidade ainda foi capital do Brasil por quase 200 anos. Essa luz forte e tropical também aparece na calçada de <strong>pedra portuguesa</strong> da praia de Copacabana, desenhada por Roberto Burle Marx em 1970, e nas casas coloridas construídas morro acima pelos próprios moradores das favelas.</p>
+
+    <div class="city-layout">
+      <div>
+        <div class="sky-card">
+          <canvas id="sky-canvas" width="600" height="420"></canvas>
+        </div>
+        <div class="time-control">
+          <span style="font-size:13px; font-weight:700;">🌅</span>
+          <input type="range" id="timeSlider" min="0" max="100" value="35">
+          <span style="font-size:13px; font-weight:700;">🌙</span>
+          <span class="time-label" id="timeLabel">Manhã</span>
+        </div>
+      </div>
+
+      <div class="mosaic-card">
+        <canvas id="mosaic-canvas" width="480" height="360"></canvas>
+        <div class="mosaic-controls">
+          <button class="swatch active" data-color="#0B1F3A" style="background:#0B1F3A"></button>
+          <button class="swatch" data-color="#E63973" style="background:#E63973"></button>
+          <button class="swatch" data-color="#F2B705" style="background:#F2B705"></button>
+          <button class="swatch" data-color="#12A296" style="background:#12A296"></button>
+          <button class="swatch" data-color="#FDFBF6" style="background:#FDFBF6; border-color:#0B1F3A;"></button>
+          <button class="small" id="resetMosaic">Restaurar onda</button>
+        </div>
+        <p class="mosaic-hint">Clique ou arraste sobre as pedras para pintar a calçada com a cor escolhida acima.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ARQUITETURA ============ -->
+<section id="arquitetura" class="light-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="kicker">04 — CONCRETO, PEDRA E LADEIRA</span>
+        <h2>Cinco formas<br>que são o Rio</h2>
+      </div>
+      <p class="lede">Do morro ao centro histórico. Clique em cada cartão para virar a peça e ler a história por trás da forma.</p>
+    </div>
+
+    <p class="intro-text">A arquitetura do Rio foi construída em camadas, uma em cima da outra. Primeiro vieram as ruas estreitas do Centro, da época em que o Brasil era colônia de Portugal. Depois, nos anos 1920 e 1930, chegou o estilo art déco — o Cristo Redentor é o exemplo mais famoso. Em seguida veio o modernismo de arquitetos como Oscar Niemeyer, Affonso Reidy e Lúcio Costa, que colocou o Brasil no mapa da arquitetura mundial. Roberto Burle Marx cuidava dos jardins e das calçadas como se fossem obras de arte. E por baixo de tudo isso, a cidade também cresceu por conta própria: mais de 20% dos cariocas moram em favelas construídas casa por casa, morro acima, sem projeto de arquiteto.</p>
+
+    <div class="arch-grid" id="archGrid">
+
+      <div class="arch-card">
+        <div class="arch-card-inner">
+          <div class="arch-face arch-front">
+            <svg viewBox="0 0 200 150"><path d="M100,20 L100,66 M76,42 L124,42" stroke="#F2B705" stroke-width="9" stroke-linecap="round"/><path d="M100,66 Q80,100 60,130 M100,66 Q120,100 140,130" stroke="#F2B705" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M40,132 Q100,148 160,132" stroke="#3a5a8a" stroke-width="6" fill="none" stroke-linecap="round"/></svg>
+            <h3>Cristo Redentor</h3>
+            <span style="display:block; font-size:11px; font-weight:700; color:var(--gold); margin-bottom:4px;">🏆 Nova Maravilha do Mundo</span>
+            <span class="tap-hint">toque para ler ↺</span>
+          </div>
+          <div class="arch-face arch-back">
+            <strong>1931 · Corcovado</strong>
+            Estilo art déco, com 30 metros de altura sobre um pedestal de 8. Projetado por Heitor da Silva Costa. Em 2007 foi eleito uma das <strong>Novas Sete Maravilhas do Mundo</strong>, numa votação popular com mais de 100 milhões de votos — o único monumento das Américas na lista, ao lado do Taj Mahal e da Muralha da China.
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-inner">
+          <div class="arch-face arch-front">
+            <svg viewBox="0 0 200 150"><g stroke-width="9" stroke-linecap="round"><path d="M20,140 L60,20" stroke="#E63973"/><path d="M60,140 L90,30" stroke="#F2B705"/><path d="M100,140 L120,40" stroke="#12A296"/><path d="M140,140 L150,50" stroke="#FDFBF6"/><path d="M170,140 L175,60" stroke="#E63973"/></g></svg>
+            <h3>Escadaria Selarón</h3>
+            <span class="tap-hint">toque para ler ↺</span>
+          </div>
+          <div class="arch-face arch-back">
+            <strong>Desde 1990 · Lapa</strong>
+            215 degraus revestidos por mais de 2000 azulejos de 60 países, obra contínua do artista chileno Jorge Selarón, que morou na escada até sua morte, em 2013.
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-inner">
+          <div class="arch-face arch-front">
+            <svg viewBox="0 0 200 150"><ellipse cx="100" cy="110" rx="70" ry="16" fill="#E63973"/><path d="M60,110 Q100,30 140,110 Z" fill="#E63973"/><rect x="94" y="110" width="12" height="22" fill="#E63973"/></svg>
+            <h3>MAC Niterói</h3>
+            <span class="tap-hint">toque para ler ↺</span>
+          </div>
+          <div class="arch-face arch-back">
+            <strong>1996 · Oscar Niemeyer</strong>
+            Um disco de concreto suspenso sobre um único pilar central, com espelho d'água ao redor — Niemeyer buscava "inventar formas que a natureza não fez".
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-inner">
+          <div class="arch-face arch-front">
+            <svg viewBox="0 0 200 150"><rect x="40" y="60" width="120" height="70" fill="#F2B705"/><path d="M40,60 L100,25 L160,60 Z" fill="#F2B705"/><rect x="90" y="80" width="20" height="50" fill="#0E2A4D"/></svg>
+            <h3>Theatro Municipal</h3>
+            <span class="tap-hint">toque para ler ↺</span>
+          </div>
+          <div class="arch-face arch-back">
+            <strong>1909 · Centro</strong>
+            Inspirado na Ópera de Paris, mistura eclético europeu com mármores e pedras brasileiras — símbolo do Rio como capital cultural na virada do século 20.
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-inner">
+          <div class="arch-face arch-front">
+            <svg viewBox="0 0 200 150"><g stroke="#0E2A4D" stroke-width="2"><rect x="20" y="80" width="40" height="50" fill="#12A296"/><rect x="62" y="60" width="40" height="70" fill="#F2B705"/><rect x="104" y="90" width="36" height="40" fill="#E63973"/><rect x="142" y="50" width="38" height="80" fill="#FDFBF6"/></g></svg>
+            <h3>Morros cariocas</h3>
+            <span class="tap-hint">toque para ler ↺</span>
+          </div>
+          <div class="arch-face arch-back">
+            <strong>Autoconstrução coletiva</strong>
+            As favelas surgiram no fim do século 19 — a mais antiga, o Morro da Providência, apareceu em 1897, ocupada por ex-soldados que voltavam da Guerra de Canudos. Hoje são centenas espalhadas pelos morros do Rio, como Rocinha e Santa Marta: bairros erguidos casa a casa pelos próprios moradores, sem projeto de arquiteto, e que também são berço de muita música e cultura carioca.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="display">Um Rio, muitas camadas.</div>
+    <p>Feito com HTML, CSS e JavaScript puros — todos os sons são sintetizados ao vivo pela Web Audio API, sem nenhum arquivo de áudio.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var navToggle = document.getElementById('navToggle');
+  var navMenu = document.getElementById('navMenu');
+  navToggle.addEventListener('click', function(){
+    var open = navMenu.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', open ? 'true':'false');
+  });
+  navMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ navMenu.classList.remove('open'); });
+  });
+
+  /* ============ CONFETTI ============ */
+  var canvas = document.getElementById('confetti-canvas');
+  var ctx = canvas.getContext('2d');
+  var hero = document.getElementById('hero');
+  var confetti = [];
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var colors = ['#F2B705','#E63973','#12A296','#FDFBF6'];
+
+  function resizeCanvas(){ canvas.width = hero.clientWidth; canvas.height = hero.clientHeight; }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function spawnConfetti(x, y, count){
+    for(var i=0;i<count;i++){
+      confetti.push({
+        x: x + (Math.random()-0.5)*40, y: y + (Math.random()-0.5)*40,
+        vx: (Math.random()-0.5)*7, vy: -Math.random()*8 - 3,
+        size: 4 + Math.random()*6, color: colors[Math.floor(Math.random()*colors.length)],
+        rot: Math.random()*Math.PI*2, vrot: (Math.random()-0.5)*0.3, life: 0
+      });
+    }
+  }
+  function tickConfetti(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    confetti.forEach(function(p){
+      p.vy += 0.18; p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.life++;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/3, p.size, p.size*0.66);
+      ctx.restore();
+    });
+    confetti = confetti.filter(function(p){ return p.y < canvas.height + 40 && p.life < 400; });
+    requestAnimationFrame(tickConfetti);
+  }
+  if(!reduceMotion){ requestAnimationFrame(tickConfetti); } else { ctx.clearRect(0,0,canvas.width,canvas.height); }
+
+  document.getElementById('heroConfettiBtn').addEventListener('click', function(){
+    var rect = canvas.getBoundingClientRect();
+    spawnConfetti(rect.width/2, rect.height*0.35, reduceMotion ? 0 : 90);
+  });
+  hero.addEventListener('click', function(e){
+    if(e.target.closest('button, a')) return;
+    var rect = canvas.getBoundingClientRect();
+    spawnConfetti(e.clientX - rect.left, e.clientY - rect.top, reduceMotion ? 0 : 40);
+  });
+  window.addEventListener('load', function(){
+    if(!reduceMotion){ spawnConfetti(canvas.width/2, canvas.height*0.3, 60); }
+  });
+
+  var skyline = document.getElementById('skyline');
+  var far = skyline.querySelector('.layer-far');
+  var mid = skyline.querySelector('.layer-mid');
+  if(!reduceMotion){
+    window.addEventListener('mousemove', function(e){
+      var cx = (e.clientX / window.innerWidth - 0.5);
+      far.style.transform = 'translateX(calc(-50% + ' + (cx*10) + 'px))';
+      mid.style.transform = 'translateX(calc(-50% + ' + (cx*24) + 'px))';
+    });
+  }
+
+  /* ============ AUDIO ENGINE (compartilhado) ============ */
+  var audioCtx = null;
+  function ensureAudio(){
+    if(!audioCtx){ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+  }
+  function noiseBuffer(duration){
+    var bufferSize = audioCtx.sampleRate * duration;
+    var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for(var i=0;i<bufferSize;i++){ data[i] = Math.random()*2 - 1; }
+    return buffer;
+  }
+  function playSurdo(t, vol){
+    vol = vol || 0.9;
+    var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(120, t); osc.frequency.exponentialRampToValueAtTime(55, t + 0.25);
+    gain.gain.setValueAtTime(vol, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.4);
+  }
+  function playCaixa(t, vol){
+    vol = vol || 0.5;
+    var src = audioCtx.createBufferSource(); src.buffer = noiseBuffer(0.15);
+    var bp = audioCtx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = 0.7;
+    var gain = audioCtx.createGain(); gain.gain.setValueAtTime(vol, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+    src.connect(bp); bp.connect(gain); gain.connect(audioCtx.destination); src.start(t);
+  }
+  function playTamborim(t){
+    var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+    osc.type = 'square'; osc.frequency.setValueAtTime(1500, t);
+    gain.gain.setValueAtTime(0.18, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.09);
+  }
+  function playAgogo(t){
+    [880, 1320].forEach(function(freq){
+      var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+      osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.001, t); gain.gain.linearRampToValueAtTime(0.22, t + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.22);
+    });
+  }
+  function playPandeiro(t){
+    var src = audioCtx.createBufferSource(); src.buffer = noiseBuffer(0.1);
+    var hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3500;
+    var gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.35, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    src.connect(hp); hp.connect(gain); gain.connect(audioCtx.destination); src.start(t);
+    var osc = audioCtx.createOscillator(); var gain2 = audioCtx.createGain();
+    osc.type='sine'; osc.frequency.setValueAtTime(300, t);
+    gain2.gain.setValueAtTime(0.15, t); gain2.gain.exponentialRampToValueAtTime(0.001, t+0.1);
+    osc.connect(gain2); gain2.connect(audioCtx.destination); osc.start(t); osc.stop(t+0.1);
+  }
+  function playPluck(t, freq){
+    var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0.22, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.5);
+  }
+  function playBrush(t){
+    var src = audioCtx.createBufferSource(); src.buffer = noiseBuffer(0.3);
+    var bp = audioCtx.createBiquadFilter(); bp.type = 'highpass'; bp.frequency.value = 2000;
+    var gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.12, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+    src.connect(bp); bp.connect(gain); gain.connect(audioCtx.destination); src.start(t);
+  }
+  function playKickHeavy(t){
+    var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(40, t + 0.18);
+    gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+    osc.connect(gain); gain.connect(audioCtx.destination); osc.start(t); osc.stop(t + 0.3);
+  }
+  function playClap(t){
+    var src = audioCtx.createBufferSource(); src.buffer = noiseBuffer(0.2);
+    var bp = audioCtx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1200; bp.Q.value = 1.2;
+    var gain = audioCtx.createGain(); gain.gain.setValueAtTime(0.4, t); gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    src.connect(bp); bp.connect(gain); gain.connect(audioCtx.destination); src.start(t);
+  }
+
+  /* ============ BATUCADA SEQUENCER ============ */
+  var instruments = [
+    {name:'Surdo', sub:'grave · marca o tempo', color:'#F2B705', type:'surdo', steps:[1,0,0,0,1,0,0,0]},
+    {name:'Caixa', sub:'agudo · rufo constante', color:'#E63973', type:'caixa', steps:[0,0,1,0,0,0,1,0]},
+    {name:'Tamborim', sub:'metálico · viradas', color:'#12A296', type:'tamborim', steps:[1,0,1,0,1,0,1,1]},
+    {name:'Agogô', sub:'dois tons afro', color:'#FDFBF6', type:'agogo', steps:[0,1,0,1,0,1,0,1]},
+    {name:'Pandeiro', sub:'chocalho + pele', color:'#8FD0E0', type:'pandeiro', steps:[1,0,0,1,0,0,1,0]}
+  ];
+  var seqPlayers = {surdo:function(t){playSurdo(t);}, caixa:function(t){playCaixa(t);}, tamborim:playTamborim, agogo:playAgogo, pandeiro:playPandeiro};
+
+  var seqEl = document.getElementById('sequencer');
+  instruments.forEach(function(inst, rowIndex){
+    var row = document.createElement('div');
+    row.className = 'instrument-row';
+    var label = document.createElement('div');
+    label.className = 'instrument-name';
+    label.innerHTML = inst.name + '<small>' + inst.sub + '</small>';
+    row.appendChild(label);
+    for(var i=0;i<8;i++){
+      var cell = document.createElement('button');
+      cell.className = 'cell' + (inst.steps[i] ? ' on' : '');
+      cell.style.setProperty('--inst-color', inst.color);
+      cell.setAttribute('data-row', rowIndex);
+      cell.setAttribute('data-step', i);
+      cell.setAttribute('aria-label', inst.name + ' passo ' + (i+1));
+      cell.addEventListener('click', function(){
+        var r = +this.getAttribute('data-row'); var s = +this.getAttribute('data-step');
+        instruments[r].steps[s] = instruments[r].steps[s] ? 0 : 1;
+        this.classList.toggle('on');
+      });
+      row.appendChild(cell);
+    }
+    seqEl.appendChild(row);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    instruments.forEach(function(inst){ inst.steps = inst.steps.map(function(){return 0;}); });
+    seqEl.querySelectorAll('.cell').forEach(function(c){ c.classList.remove('on'); });
+  });
+
+  var isPlaying = false, currentStep = 0, nextNoteTime = 0, timerID = null, bpm = 112;
+  function scheduler(){
+    while(nextNoteTime < audioCtx.currentTime + 0.1){
+      instruments.forEach(function(inst){ if(inst.steps[currentStep]){ seqPlayers[inst.type](nextNoteTime); } });
+      (function(stepAtSchedule, timeAtSchedule){
+        var delay = (timeAtSchedule - audioCtx.currentTime) * 1000;
+        setTimeout(function(){ highlightStep(stepAtSchedule); }, Math.max(delay, 0));
+      })(currentStep, nextNoteTime);
+      var secondsPerBeat = 60.0 / bpm / 2;
+      nextNoteTime += secondsPerBeat;
+      currentStep = (currentStep + 1) % 8;
+    }
+    timerID = setTimeout(scheduler, 25);
+  }
+  function highlightStep(step){
+    seqEl.querySelectorAll('.cell').forEach(function(c){ c.classList.remove('playhead'); });
+    if(isPlaying){ seqEl.querySelectorAll('.cell[data-step="'+step+'"]').forEach(function(c){ c.classList.add('playhead'); }); }
+  }
+  var playBtn = document.getElementById('playBtn');
+  playBtn.addEventListener('click', function(){
+    ensureAudio();
+    if(isPlaying){
+      isPlaying = false; clearTimeout(timerID); playBtn.textContent = '▶';
+      seqEl.querySelectorAll('.cell').forEach(function(c){ c.classList.remove('playhead'); });
+    } else {
+      isPlaying = true; currentStep = 0; nextNoteTime = audioCtx.currentTime + 0.05;
+      playBtn.textContent = '❚❚'; scheduler();
+    }
+  });
+  var tempoSlider = document.getElementById('tempoSlider');
+  var tempoValue = document.getElementById('tempoValue');
+  tempoSlider.addEventListener('input', function(){ bpm = +this.value; tempoValue.textContent = bpm + ' bpm'; });
+
+  /* ============ GENRE LOOPS (Música) ============ */
+  var genrePatterns = {
+    samba: { bpm: 100, bars: 4,
+      steps: [
+        {t:0, fn:function(tm){ playSurdo(tm); }},
+        {t:2, fn:function(tm){ playCaixa(tm,0.3); }},
+        {t:3, fn:function(tm){ playTamborim(tm); }},
+        {t:4, fn:function(tm){ playSurdo(tm); playAgogo(tm); }},
+        {t:6, fn:function(tm){ playCaixa(tm,0.3); }},
+        {t:7, fn:function(tm){ playTamborim(tm); playPandeiro(tm); }}
+      ], steps_total:8 },
+    bossa: { bpm: 80, bars: 4,
+      steps: [
+        {t:0, fn:function(tm){ playPluck(tm, 196); }},
+        {t:1.5, fn:function(tm){ playBrush(tm); }},
+        {t:3, fn:function(tm){ playPluck(tm, 246); }},
+        {t:4.5, fn:function(tm){ playBrush(tm); }},
+        {t:6, fn:function(tm){ playPluck(tm, 220); }},
+        {t:7, fn:function(tm){ playBrush(tm); }}
+      ], steps_total:8 },
+    funk: { bpm: 130, bars: 4,
+      steps: [
+        {t:0, fn:function(tm){ playKickHeavy(tm); }},
+        {t:1, fn:function(tm){ playKickHeavy(tm); }},
+        {t:2, fn:function(tm){ playClap(tm); }},
+        {t:4, fn:function(tm){ playKickHeavy(tm); }},
+        {t:5, fn:function(tm){ playKickHeavy(tm); }},
+        {t:6, fn:function(tm){ playClap(tm); }},
+        {t:6.5, fn:function(tm){ playKickHeavy(tm); }}
+      ], steps_total:8 }
+  };
+
+  var activeGenre = null;
+  var genreTimer = null;
+
+  function buildViz(genre){
+    var el = document.getElementById('viz-'+genre);
+    if(!el || el.childElementCount) return;
+    for(var i=0;i<16;i++){
+      var bar = document.createElement('span');
+      bar.style.height = '4px';
+      el.appendChild(bar);
+    }
+  }
+  ['samba','bossa','funk'].forEach(buildViz);
+
+  function animateViz(genre, stepFraction){
+    var el = document.getElementById('viz-'+genre);
+    if(!el) return;
+    var bars = el.children;
+    for(var i=0;i<bars.length;i++){
+      var h = 4 + Math.abs(Math.sin((stepFraction*Math.PI*2) + i*0.6)) * 18;
+      bars[i].style.height = h + 'px';
+    }
+  }
+
+  function stopGenre(){
+    if(genreTimer){ clearTimeout(genreTimer); genreTimer = null; }
+    if(activeGenre){
+      var btn = document.querySelector('.genre-play[data-genre="'+activeGenre+'"]');
+      if(btn){ btn.querySelector('.btn-icon').textContent = '▶'; }
+    }
+    activeGenre = null;
+  }
+
+  function playGenre(genre){
+    ensureAudio();
+    if(activeGenre === genre){ stopGenre(); return; }
+    stopGenre();
+    activeGenre = genre;
+    var pattern = genrePatterns[genre];
+    var btn = document.querySelector('.genre-play[data-genre="'+genre+'"]');
+    if(btn){ btn.querySelector('.btn-icon').textContent = '❚❚'; }
+
+    var barCount = 0;
+    var stepDur = 60 / pattern.bpm / 2; // seconds per 8th-step
+    var barDur = stepDur * pattern.steps_total;
+    var startTime = audioCtx.currentTime + 0.05;
+
+    function scheduleBar(barIndex){
+      var barStart = startTime + barIndex * barDur;
+      pattern.steps.forEach(function(s){
+        s.fn(barStart + s.t * stepDur);
+      });
+    }
+
+    for(var b=0;b<pattern.bars;b++){ scheduleBar(b); }
+
+    var vizStart = performance.now();
+    var totalDurMs = pattern.bars * barDur * 1000;
+    function vizLoop(){
+      if(activeGenre !== genre) return;
+      var elapsed = performance.now() - vizStart;
+      var frac = (elapsed / (barDur*1000)) % 1;
+      animateViz(genre, frac);
+      if(elapsed < totalDurMs){
+        requestAnimationFrame(vizLoop);
+      }
+    }
+    if(!reduceMotion){ requestAnimationFrame(vizLoop); }
+
+    genreTimer = setTimeout(function(){ stopGenre(); }, totalDurMs + 80);
+  }
+
+  document.querySelectorAll('.genre-play').forEach(function(btn){
+    btn.addEventListener('click', function(){ playGenre(this.getAttribute('data-genre')); });
+  });
+
+  /* ============ SKY / TIME OF DAY ============ */
+  var skyCanvas = document.getElementById('sky-canvas');
+  var skyCtx = skyCanvas.getContext('2d');
+  var timeSlider = document.getElementById('timeSlider');
+  var timeLabel = document.getElementById('timeLabel');
+  var stars = [];
+  for(var s=0;s<70;s++){ stars.push({x:Math.random()*600, y:Math.random()*260, r:Math.random()*1.4+0.3, tw:Math.random()*Math.PI*2}); }
+
+  function lerpColor(a, b, t){
+    var ah = a.match(/\w\w/g).map(function(h){return parseInt(h,16);});
+    var bh = b.match(/\w\w/g).map(function(h){return parseInt(h,16);});
+    var rh = ah.map(function(v,i){ return Math.round(v + (bh[i]-v)*t); });
+    return 'rgb(' + rh.join(',') + ')';
+  }
+
+  function drawSky(v){
+    var w = skyCanvas.width, h = skyCanvas.height;
+    var skyTop, skyBottom, isNight;
+    if(v < 0.25){ var t = v/0.25; skyTop = lerpColor('#2b4f7a', '#5FB6DA', t); skyBottom = lerpColor('#f2b56a', '#cdeef2', t); isNight = false; }
+    else if(v < 0.55){ skyTop = '#2E8FD1'; skyBottom = '#BFE9EE'; isNight = false; }
+    else if(v < 0.8){ var t2 = (v-0.55)/0.25; skyTop = lerpColor('#2E8FD1', '#5b3466', t2); skyBottom = lerpColor('#BFE9EE', '#f0895e', t2); isNight = false; }
+    else { var t3 = (v-0.8)/0.2; skyTop = lerpColor('#5b3466', '#050d1f', t3); skyBottom = lerpColor('#f0895e', '#132038', t3); isNight = t3 > 0.6; }
+
+    var grad = skyCtx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0, skyTop); grad.addColorStop(1, skyBottom);
+    skyCtx.fillStyle = grad; skyCtx.fillRect(0,0,w,h);
+
+    var starAlpha = v > 0.62 ? Math.min(1, (v-0.62)/0.25) : 0;
+    if(starAlpha > 0){
+      stars.forEach(function(st){
+        skyCtx.globalAlpha = starAlpha * (0.5 + 0.5*Math.sin(st.tw));
+        skyCtx.fillStyle = '#ffffff'; skyCtx.beginPath(); skyCtx.arc(st.x, st.y, st.r, 0, Math.PI*2); skyCtx.fill();
+      });
+      skyCtx.globalAlpha = 1;
+    }
+
+    var arcX = 40 + v*(w-80);
+    var arcY = h*0.75 - Math.sin(v*Math.PI) * h*0.55;
+    var body = v > 0.78 ? '#F3EFE0' : '#FFDD66';
+    skyCtx.fillStyle = body; skyCtx.beginPath(); skyCtx.arc(arcX, arcY, 26, 0, Math.PI*2); skyCtx.fill();
+    if(v > 0.78){ skyCtx.fillStyle = skyBottom; skyCtx.beginPath(); skyCtx.arc(arcX+9, arcY-6, 22, 0, Math.PI*2); skyCtx.fill(); }
+
+    var seaColor = isNight ? '#0a1730' : lerpColor('#12617a','#1c8fa8', Math.max(0,1-Math.abs(v-0.5)*2));
+    skyCtx.fillStyle = seaColor; skyCtx.fillRect(0, h*0.78, w, h*0.22);
+
+    var mountainColor = isNight ? '#040a16' : '#0d2035';
+    skyCtx.fillStyle = mountainColor;
+    skyCtx.beginPath();
+    skyCtx.moveTo(0, h*0.8); skyCtx.lineTo(w*0.28, h*0.55); skyCtx.lineTo(w*0.4, h*0.8);
+    skyCtx.lineTo(w*0.55, h*0.42); skyCtx.lineTo(w*0.72, h*0.8); skyCtx.lineTo(w, h*0.62); skyCtx.lineTo(w, h*0.8);
+    skyCtx.closePath(); skyCtx.fill();
+
+    skyCtx.strokeStyle = mountainColor; skyCtx.lineWidth = 5;
+    skyCtx.beginPath();
+    skyCtx.moveTo(w*0.55, h*0.42); skyCtx.lineTo(w*0.55, h*0.36);
+    skyCtx.moveTo(w*0.55-11, h*0.385); skyCtx.lineTo(w*0.55+11, h*0.385);
+    skyCtx.stroke();
+
+    var label = v < 0.2 ? 'Amanhecer' : v < 0.45 ? 'Manhã' : v < 0.6 ? 'Meio-dia' : v < 0.8 ? 'Fim de tarde' : v < 0.92 ? 'Entardecer' : 'Noite';
+    timeLabel.textContent = label;
+  }
+  timeSlider.addEventListener('input', function(){ drawSky(this.value/100); });
+  drawSky(timeSlider.value/100);
+  function twinkle(){
+    stars.forEach(function(st){ st.tw += 0.03; });
+    if(timeSlider.value/100 > 0.6 && !reduceMotion){ drawSky(timeSlider.value/100); }
+    requestAnimationFrame(twinkle);
+  }
+  if(!reduceMotion){ requestAnimationFrame(twinkle); }
+
+  /* ============ MOSAIC ============ */
+  var mosaicCanvas = document.getElementById('mosaic-canvas');
+  var mCtx = mosaicCanvas.getContext('2d');
+  var cols = 12, rows = 9, tileColors = [], currentColor = '#0B1F3A';
+  function waveDefault(){
+    tileColors = [];
+    for(var y=0;y<rows;y++){
+      var row = [];
+      for(var x=0;x<cols;x++){ var wave = Math.sin((x*0.9 + y*0.4)) > 0.15; row.push(wave ? '#0B1F3A' : '#FDFBF6'); }
+      tileColors.push(row);
+    }
+  }
+  waveDefault();
+  function drawMosaic(){
+    var w = mosaicCanvas.width, h = mosaicCanvas.height, tw = w/cols, th = h/rows;
+    mCtx.clearRect(0,0,w,h);
+    for(var y=0;y<rows;y++){ for(var x=0;x<cols;x++){
+      mCtx.fillStyle = tileColors[y][x]; mCtx.fillRect(x*tw, y*th, tw+0.6, th+0.6);
+      mCtx.strokeStyle = 'rgba(11,31,58,0.12)'; mCtx.lineWidth = 1; mCtx.strokeRect(x*tw, y*th, tw, th);
+    }}
+  }
+  function resizeMosaicCanvas(){
+    var displayWidth = mosaicCanvas.clientWidth;
+    mosaicCanvas.width = displayWidth; mosaicCanvas.height = displayWidth / (4/3);
+    drawMosaic();
+  }
+  window.addEventListener('resize', resizeMosaicCanvas);
+  setTimeout(resizeMosaicCanvas, 50);
+  drawMosaic();
+  function paintAt(clientX, clientY){
+    var rect = mosaicCanvas.getBoundingClientRect();
+    var x = clientX - rect.left, y = clientY - rect.top;
+    var col = Math.floor(x / (mosaicCanvas.width/cols)), row = Math.floor(y / (mosaicCanvas.height/rows));
+    if(row>=0 && row<rows && col>=0 && col<cols){ tileColors[row][col] = currentColor; drawMosaic(); }
+  }
+  var painting = false;
+  mosaicCanvas.addEventListener('mousedown', function(e){ painting = true; paintAt(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', function(){ painting = false; });
+  mosaicCanvas.addEventListener('mousemove', function(e){ if(painting) paintAt(e.clientX, e.clientY); });
+  mosaicCanvas.addEventListener('touchstart', function(e){ var t=e.touches[0]; paintAt(t.clientX, t.clientY); }, {passive:true});
+  mosaicCanvas.addEventListener('touchmove', function(e){ var t=e.touches[0]; paintAt(t.clientX, t.clientY); }, {passive:true});
+  document.querySelectorAll('.swatch').forEach(function(sw){
+    sw.addEventListener('click', function(){
+      document.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('active'); });
+      this.classList.add('active'); currentColor = this.getAttribute('data-color');
+    });
+  });
+  document.getElementById('resetMosaic').addEventListener('click', function(){ waveDefault(); drawMosaic(); });
+
+  /* ============ ARCHITECTURE FLIP CARDS ============ */
+  document.querySelectorAll('.arch-card').forEach(function(card){
+    card.addEventListener('click', function(){ this.classList.toggle('flipped'); });
+    card.setAttribute('tabindex', '0'); card.setAttribute('role','button');
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.classList.toggle('flipped'); }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
